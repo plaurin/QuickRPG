@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.52.0" />
     <PackageReference Include="Stateless" Version="5.20.0" />
   </ItemGroup>
 
