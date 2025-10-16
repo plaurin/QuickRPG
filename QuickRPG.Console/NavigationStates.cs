@@ -2,6 +2,7 @@
 
 public enum NavigationStates
 {
+    Init,
     NoGameLoaded,
     GameLoaded,
     GalleryMain,

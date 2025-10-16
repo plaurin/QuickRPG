@@ -1,32 +1,27 @@
-﻿using Spectre.Console;
+﻿using QuickRPG.Console;
+using Spectre.Console;
 
-AnsiConsole.MarkupLine("[red](Welcome to Quick RPG)[/]");
+//AnsiConsole.MarkupLine("[red](Welcome to Quick RPG)[/]");
 
-var navigation = new Navigation();
+var sm = new NavigationStateMachine();
+var navigation = new Navigation(sm);
 
-var game = AnsiConsole.Prompt(
-    new SelectionPrompt<string>()
-        .Title("Select a game")
-        .PageSize(5)
-        .MoreChoicesText("[grey](Move up and down to reveal more fruits)[/]")
-        .AddChoices([
-            "Final Fantasy Mystic Quest",
-            "Dragon Warrior 1",
-            "Dragon Warrior 2",
-        ]));
+navigation.StateMachine.Fire(NavigationTriggers.Start);
 
-// Echo the fruit back to the terminal
-AnsiConsole.WriteLine($"Selected Game : {game}");
+//var game = AnsiConsole.Prompt(
+//    new SelectionPrompt<string>()
+//        .Title("Select a game")
+//        .PageSize(5)
+//        .MoreChoicesText("[grey](Move up and down to reveal more fruits)[/]")
+//        .AddChoices([
+//            "Final Fantasy Mystic Quest",
+//            "Dragon Warrior 1",
+//            "Dragon Warrior 2",
+//        ]));
 
-navigation.Game = game;
+//// Echo the fruit back to the terminal
+//AnsiConsole.WriteLine($"Selected Game : {game}");
 
-var panel = new Panel("toto")
-{
-    Header = new PanelHeader(navigation.Path),
-    Border = BoxBorder.Rounded,
-    Expand = true
-};
-
-AnsiConsole.Write(panel);
+//sm.Transition(game);
 
 Console.ReadKey();
