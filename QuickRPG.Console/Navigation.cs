@@ -17,16 +17,14 @@ public class Navigation
 
         _noGameLoadedState = new NoGameLoadedState(this);
         GameLoadedState = new GameLoadedState(this);
+        GaleryMainState = new GaleryMainState(this);
     }
 
     public StateMachine<NavigationStates, NavigationTriggers> StateMachine => _stateMachine;
 
     public GameLoadedState GameLoadedState { get; }
-
+    public GaleryMainState GaleryMainState { get; }
     public string? Game { get; set; }
-
     public List<string> Nav { get; } = [];
-
     public string Path => $"> {Game}";
-
 }
