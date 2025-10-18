@@ -55,8 +55,9 @@ public class MainWindow
 
         AnsiConsole.Clear();
         AnsiConsole.Write(layout);
+        AnsiConsole.Cursor.Hide();
 
-        while (true)
+        while (_commands.Count != 0)
         {
             var key = AnsiConsole.Console.Input.ReadKey(true);
 
@@ -67,7 +68,7 @@ public class MainWindow
                     command.action();
                     return;
                 }
-            }   
+            }
         }
     }
 }

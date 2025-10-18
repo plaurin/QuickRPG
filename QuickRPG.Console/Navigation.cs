@@ -22,9 +22,11 @@ public class Navigation
 
     public StateMachine<NavigationStates, NavigationTriggers> StateMachine => _stateMachine;
 
-    public GameLoadedState GameLoadedState { get; }
-    public GaleryMainState GaleryMainState { get; }
     public string? Game { get; set; }
     public List<string> Nav { get; } = [];
     public string Path => $"> {Game}";
+    public string RomPath { get; internal set; }
+
+    public GameLoadedState GameLoadedState { get; }
+    public GaleryMainState GaleryMainState { get; }
 }
