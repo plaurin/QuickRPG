@@ -25,7 +25,7 @@ public class GaleryMainState
         new MainWindow(_navigation)
             .WithContent(new Rows(
                 new Markup($"[green]In Main Gallery[/]"),
-                new Markup($"[green]Total Enemies:[/] [red]{enemiesData.Count}[/]")))
+                new Markup($"[green]Total Enemies:[/] [red]{enemiesData.Count()}[/]")))
             .AddCommand("[yellow][underline]E[/]nemies Gallery[/]", ConsoleKey.E, () => { _navigation.StateMachine.Fire(NavigationTriggers.OpenEnemiesGallery); })
             .AddCommand("[green]ESC[/] Close Gallery", ConsoleKey.Escape, () => { _navigation.StateMachine.Fire(NavigationTriggers.CloseGallery); })
             .Draw();

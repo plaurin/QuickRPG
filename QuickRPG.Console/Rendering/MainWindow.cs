@@ -1,5 +1,6 @@
 ﻿using Spectre.Console;
 using Spectre.Console.Rendering;
+using System.Net.Http.Headers;
 
 namespace QuickRPG.Console.Rendering;
 
@@ -34,7 +35,22 @@ public class MainWindow
                 new Layout("Main"),
                 new Layout("Command"));
 
-        var mainPanel = new Panel(_content)
+        IRenderable mainContent;
+        //if (_count != null)
+        //{
+        //    mainContent = new Layout("Content")
+        //        .SplitColumns(
+        //            new Layout("Selection").Size(4).,
+        //            new Layout("MainContent", _content)
+        //        );
+        //}
+        //else
+        {
+            mainContent = _content;
+        }
+
+
+        var mainPanel = new Panel(mainContent)
         {
             Header = new PanelHeader($"[blue]{_navigation.Path}[/]"),
             Border = BoxBorder.Rounded,

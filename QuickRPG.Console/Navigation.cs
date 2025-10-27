@@ -18,6 +18,7 @@ public class Navigation
         _noGameLoadedState = new NoGameLoadedState(this);
         GameLoadedState = new GameLoadedState(this);
         GaleryMainState = new GaleryMainState(this);
+        EnemiesGaleryState = new EnemiesGaleryState(this);
     }
 
     public StateMachine<NavigationStates, NavigationTriggers> StateMachine => _stateMachine;
@@ -26,7 +27,16 @@ public class Navigation
     public List<string> Nav { get; } = [];
     public string Path => $"> {Game}";
     public string RomPath { get; internal set; }
+    public EnemySorting EnemySorting { get; internal set; }
 
     public GameLoadedState GameLoadedState { get; }
     public GaleryMainState GaleryMainState { get; }
+    public EnemiesGaleryState EnemiesGaleryState { get; }
+}
+
+public enum EnemySorting
+{
+    RomIndex,
+    Name,
+    Xp
 }
