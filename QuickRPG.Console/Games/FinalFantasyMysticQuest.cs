@@ -1,10 +1,13 @@
-﻿namespace QuickRPG.Console.Games;
+﻿using System.Data;
+
+namespace QuickRPG.Console.Games;
 
 // https://wiki.superfamicom.org/final-fantasy-mystic-quest#monster-chart
 // https://gamefaqs.gamespot.com/boards/532476-final-fantasy-mystic-quest/66150631
 // https://datacrystal.tcrf.net/wiki/Final_Fantasy:_Mystic_Quest/RAM_map
 // https://finalfantasy.fandom.com/wiki/Final_Fantasy_Mystic_Quest_enemies
 // https://mikesrpgcenter.com/ffmq/bestiary.html
+// https://gamefaqs.gamespot.com/snes/532476-final-fantasy-mystic-quest/faqs/39031
 
 // AddGainedXPMaybe $1096F
 // IncXP_X $2874
@@ -16,6 +19,14 @@
 // GainXpMaybe $04A0
 
 // DropMultiply $1095F
+
+// Level Forest Chest $0ECD-0ECE
+
+// $0C40-$0DF0 Sprite Animation?
+
+// Init Battlefield battle left $654D0 
+
+// Remove 1st slime LeveL Forest $3B318 = 0 
 
 public class FinalFantasyMysticQuest
 {
@@ -181,7 +192,89 @@ public class FinalFantasyMysticQuest
         return new EnemyData(name, hp, strength, defense, speed, magic,
             strongElement1, strongElement2, weakElement, xp, gil, raw);
     }
+
+    public IEnumerable<MapElements> GetMapElements()
+    {
+        var levelForestAddress = 0x3B2C1;
+
+        for (int i = 0; i < 26; i++)
+        {
+            yield return ExtractMapElements(levelForestAddress + i * 7);
+        }
+    }
+
+    private MapElements ExtractMapElements(int offset)
+    {
+        var endOffset = offset + 7;
+
+        var subType = RomData[offset + 1];
+        var mapY = RomData[offset + 2];
+        var mapX = RomData[offset + 3];
+        var palette = RomData[offset + 4];
+        var type = RomData[offset + 5];
+        var raw = RomData[offset..endOffset];
+
+        return new MapElements($"{offset:X}", ExtractMapX(type, mapX), ExtractMapY(type, mapY), ExtractMapElementType(type), ExtractMapElementSubType(type, subType), palette, raw);
+    }
+
+    private byte ExtractMapX(byte type, byte x)
+    {
+        return type == 0x13 ? (byte)(x - 0x00) : x;
+    }
+
+    private byte ExtractMapY(byte type, byte y)
+    {
+        return type == 0x13 ? (byte)(y - 0x40) : y;
+    }
+
+    private string ExtractMapElementType(byte type)
+    {
+        return $"{type:X2} " + type switch
+        {
+            0x0B => "Enemy",
+            0x13 => "Chest",
+            _ => $"?",
+        };
+    }
+
+    private string ExtractMapElementSubType(byte type, byte subType)
+    {
+        if (type == 0x0B)
+        {
+            return $"{subType:X2} " + subType switch
+            {
+                0x15 => $"Brownie",
+                0x16 => $"Slime",
+                _ => $"?",
+            };
+        }
+
+        if (type == 0x13)
+        {
+            return $"{subType:X2} " + subType switch
+            {
+                0x15 => $"Giant Axe",
+                0x16 => $"Meteor",
+                0x17 => $"Apollo Helm",
+                0x18 => $"Excalibur",
+                0x19 => $"Flare",
+                
+                0x28 => $"Cure Potion x3",
+                0x29 => $"Heal Potion x3",
+                0x2A => $"Cure Potion x3",
+                0x2B => $"Heal Potion x3",
+                0x2C => $"Cure Potion x3",
+                0x2D => $"Cure Potion x3",
+                0x2E => $"Cure Potion x3",
+                _ => $"?",
+            };
+        }
+
+        return $"{subType:X2} Unknown";
+    }
 }
 
 public record EnemyData(string Name, int HP, int Strength, int Defense, int Speed, int Magic,
     int StrongElement1, int StrongElement2, int WeakElement, int XP, int Gil, byte[] Raw);
+
+public record MapElements(string Name, int X, int Y, string Type, string SubType, int Palette, byte[] Raw);

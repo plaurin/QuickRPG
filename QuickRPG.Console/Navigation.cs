@@ -19,6 +19,7 @@ public class Navigation
         GameLoadedState = new GameLoadedState(this);
         GaleryMainState = new GaleryMainState(this);
         EnemiesGaleryState = new EnemiesGaleryState(this);
+        MapElementsState = new MapElementsState(this);
     }
 
     public StateMachine<NavigationStates, NavigationTriggers> StateMachine => _stateMachine;
@@ -32,6 +33,7 @@ public class Navigation
     public GameLoadedState GameLoadedState { get; }
     public GaleryMainState GaleryMainState { get; }
     public EnemiesGaleryState EnemiesGaleryState { get; }
+    public MapElementsState MapElementsState { get; }
 }
 
 public enum EnemySorting

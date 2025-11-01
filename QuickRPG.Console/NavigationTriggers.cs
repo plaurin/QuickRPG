@@ -7,9 +7,13 @@ public enum NavigationTriggers
     ChangeGame,
     OpenGallery,
     CloseGallery,
+
     OpenEnemiesGallery,
     CloseEnemiesGallery,
     OpenEnemyDetails,
     CloseEnemyDetails,
     NextEnemyDetails,
+
+    OpenMapElements,
+    CloseMapElements,
 }
