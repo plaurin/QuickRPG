@@ -1,4 +1,5 @@
-﻿using QuickRPG.Console.States;
+﻿using QuickRPG.Console.Configs;
+using QuickRPG.Console.States;
 using Stateless;
 
 namespace QuickRPG.Console;
@@ -15,8 +16,11 @@ public class Navigation
         _stateMachine.Configure(NavigationStates.Init)
             .Permit(NavigationTriggers.Start, NavigationStates.NoGameLoaded);
 
+        var configManager = new ConfigManager();
+        
+
         _noGameLoadedState = new NoGameLoadedState(this);
-        GameLoadedState = new GameLoadedState(this);
+        GameLoadedState = new GameLoadedState(this, configManager);
         GaleryMainState = new GaleryMainState(this);
         EnemiesGaleryState = new EnemiesGaleryState(this);
         MapElementsState = new MapElementsState(this);
@@ -28,6 +32,7 @@ public class Navigation
     public List<string> Nav { get; } = [];
     public string Path => $"> {Game}";
     public string RomPath { get; internal set; }
+    public string RomHackPath { get; internal set; }
     public EnemySorting EnemySorting { get; internal set; }
 
     public GameLoadedState GameLoadedState { get; }
