@@ -5,6 +5,8 @@ public enum NavigationTriggers
     Start,
     LoadGame,
     ChangeGame,
+    OpenHacksRepository,
+    CloseHacksRepository,
     OpenGallery,
     CloseGallery,
 

@@ -17,13 +17,13 @@ public class Navigation
             .Permit(NavigationTriggers.Start, NavigationStates.NoGameLoaded);
 
         var configManager = new ConfigManager();
-        
 
         _noGameLoadedState = new NoGameLoadedState(this);
         GameLoadedState = new GameLoadedState(this, configManager);
-        GaleryMainState = new GaleryMainState(this);
-        EnemiesGaleryState = new EnemiesGaleryState(this);
-        MapElementsState = new MapElementsState(this);
+        GaleryMainState = new GaleryMainState(this, configManager.Config);
+        EnemiesGaleryState = new EnemiesGaleryState(this, configManager.Config);
+        MapElementsState = new MapElementsState(this, configManager.Config);
+        HacksRepositoryState = new HacksRepositoryState(this, configManager);
     }
 
     public StateMachine<NavigationStates, NavigationTriggers> StateMachine => _stateMachine;
@@ -39,6 +39,7 @@ public class Navigation
     public GaleryMainState GaleryMainState { get; }
     public EnemiesGaleryState EnemiesGaleryState { get; }
     public MapElementsState MapElementsState { get; }
+    public HacksRepositoryState HacksRepositoryState { get; }
 }
 
 public enum EnemySorting

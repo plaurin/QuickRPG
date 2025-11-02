@@ -21,8 +21,10 @@ public class GameLoadedState
         _navigation.StateMachine.Configure(NavigationStates.GameLoaded)
             .OnEntryFrom(LoadGameTrigger, Enter)
             .OnEntryFrom(NavigationTriggers.CloseGallery, Enter)
+            .OnEntryFrom(NavigationTriggers.CloseHacksRepository, Enter)
             .Permit(NavigationTriggers.ChangeGame, NavigationStates.NoGameLoaded)
-            .Permit(NavigationTriggers.OpenGallery, NavigationStates.GalleryMain);
+            .Permit(NavigationTriggers.OpenGallery, NavigationStates.GalleryMain)
+            .Permit(NavigationTriggers.OpenHacksRepository, NavigationStates.HacksRepository);
     }
 
     public StateMachine<NavigationStates, NavigationTriggers>.TriggerWithParameters<string> LoadGameTrigger { get; }
@@ -59,9 +61,9 @@ public class GameLoadedState
         {
             window
                 .AddCommand("[yellow][underline]G[/]allery[/]", ConsoleKey.G, () => { _navigation.StateMachine.Fire(NavigationTriggers.OpenGallery); })
+                .AddCommand("[yellow][underline]H[/]ack repository[/]", ConsoleKey.H, () => { _navigation.StateMachine.Fire(NavigationTriggers.OpenHacksRepository); })
                 .AddCommand("[yellow][underline]C[/]hange game[/]", ConsoleKey.C, () => { _navigation.StateMachine.Fire(NavigationTriggers.ChangeGame); })
                 .AddCommand("[yellow][underline]S[/]et ROM path[/]", ConsoleKey.S, SetRomPath)
-                .AddCommand("[yellow]Set ROM [underline]H[/]ack path[/]", ConsoleKey.H, SetRomHackPath)
                 .AddCommand("[red][underline]Q[/]uit[/]", ConsoleKey.Q, () => { Environment.Exit(0); });
         }
 

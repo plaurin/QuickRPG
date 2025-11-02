@@ -22,6 +22,12 @@ public class MainWindow
         return this;
     }
 
+    public MainWindow AddCommandWithoutText(ConsoleKey hotkey, Action action)
+    {
+        _commands.Add(("", hotkey, action));
+        return this;
+    }
+
     public MainWindow WithContent(IRenderable content)
     {
         _content = content;

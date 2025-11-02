@@ -1,4 +1,4 @@
-﻿using System.Data;
+﻿using QuickRPG.Console.Configs;
 
 namespace QuickRPG.Console.Games;
 
@@ -18,7 +18,7 @@ namespace QuickRPG.Console.Games;
 // Experience $1011
 // GainXpMaybe $04A0
 
-// DropMultiply $1095F
+// DropMultiply $10962
 
 // Level Forest Chest $0ECD-0ECE
 
@@ -30,12 +30,36 @@ namespace QuickRPG.Console.Games;
 
 public class FinalFantasyMysticQuest
 {
+    private readonly GameConfig _config;
     private readonly string _romPath;
     private byte[]? _romData;
+    private readonly List<RomHack> _romHacks;
 
-    public FinalFantasyMysticQuest(string romPath)
+    public FinalFantasyMysticQuest(GameConfig config, string romPath, FinalFantasyMysticQuest? originalRom = null)
     {
+        _config = config;
         _romPath = romPath;
+
+        if (originalRom != null)
+        {
+            _romData = originalRom.RomData;
+        }
+
+        _romHacks =
+        [
+            new(
+                HackName: "Enemies Drops Rate",
+                CurrentValue: () => config.EnemiesDropRate,
+                DefaultValue: 3, // TODO read from original rom
+                UpdateValue: value => config.EnemiesDropRate = (byte)value,
+                RunHack: SetEnemiesDropRate),
+            new(
+                HackName: "Level Forst Enemies Gone",
+                CurrentValue: () => config.LevelForestEnemiesGone,
+                DefaultValue: false,
+                UpdateValue: value => config.LevelForestEnemiesGone = (bool)value,
+                RunHack: SetLevelForestEnemiesGone),
+        ];
     }
 
     private byte[] RomData
@@ -46,6 +70,8 @@ public class FinalFantasyMysticQuest
             return _romData;
         }
     }
+
+    public IEnumerable<RomHack> RomHacks => _romHacks;
 
     public IEnumerable<EnemyData> GetEnemiesData()
     {
@@ -272,7 +298,28 @@ public class FinalFantasyMysticQuest
 
         return $"{subType:X2} Unknown";
     }
+
+    public void SetEnemiesDropRate()
+    {
+        RomData[0x10962] = _config.EnemiesDropRate;
+        File.WriteAllBytes(_romPath, RomData);
+    }
+
+    public void SetLevelForestEnemiesGone()
+    {
+        if (_config.LevelForestEnemiesGone)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                RomData[0x3B2EE + i * 7] = 0;
+            }
+
+            File.WriteAllBytes(_romPath, RomData);
+        }
+    }
 }
+
+public record RomHack(string HackName, Func<object> CurrentValue, object DefaultValue, Action<object> UpdateValue, Action RunHack);
 
 public record EnemyData(string Name, int HP, int Strength, int Defense, int Speed, int Magic,
     int StrongElement1, int StrongElement2, int WeakElement, int XP, int Gil, byte[] Raw);

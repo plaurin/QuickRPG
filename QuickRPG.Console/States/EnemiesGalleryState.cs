@@ -1,4 +1,5 @@
-﻿using QuickRPG.Console.Games;
+﻿using QuickRPG.Console.Configs;
+using QuickRPG.Console.Games;
 using QuickRPG.Console.Rendering;
 using Spectre.Console;
 
@@ -7,14 +8,15 @@ namespace QuickRPG.Console.States;
 public class EnemiesGaleryState
 {
     private readonly Navigation _navigation;
+    private readonly GameConfig _config;
     private int _selectionIndex;
     private int _selectionCount;
     private int _pageIndex;
 
-    public EnemiesGaleryState(Navigation navigation)
+    public EnemiesGaleryState(Navigation navigation, GameConfig config)
     {
         _navigation = navigation;
-
+        _config = config;
         _navigation.StateMachine.Configure(NavigationStates.EnemiesGallery)
             .OnEntry(Enter)
             .Permit(NavigationTriggers.CloseEnemiesGallery, NavigationStates.GalleryMain)
@@ -28,7 +30,7 @@ public class EnemiesGaleryState
 
     private void Render()
     {
-        var enemiesData = new FinalFantasyMysticQuest(_navigation.RomPath!).GetEnemiesData();
+        var enemiesData = new FinalFantasyMysticQuest(_config, _navigation.RomPath!).GetEnemiesData();
 
         if (_navigation.EnemySorting == EnemySorting.Name)
             enemiesData = enemiesData.OrderBy(e => e.Name);
