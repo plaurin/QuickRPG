@@ -20,9 +20,9 @@ public class Navigation
 
         _noGameLoadedState = new NoGameLoadedState(this);
         GameLoadedState = new GameLoadedState(this, configManager);
-        GaleryMainState = new GaleryMainState(this, configManager.Config);
-        EnemiesGaleryState = new EnemiesGaleryState(this, configManager.Config);
-        MapElementsState = new MapElementsState(this, configManager.Config);
+        GaleryMainState = new GaleryMainState(this, configManager);
+        EnemiesGaleryState = new EnemiesGaleryState(this, configManager);
+        MapElementsState = new MapElementsState(this, configManager);
         HacksRepositoryState = new HacksRepositoryState(this, configManager);
     }
 

@@ -8,12 +8,12 @@ namespace QuickRPG.Console.States;
 public class GaleryMainState
 {
     private readonly Navigation _navigation;
-    private readonly GameConfig _config;
+    private readonly ConfigManager _configManager;
 
-    public GaleryMainState(Navigation navigation, GameConfig config)
+    public GaleryMainState(Navigation navigation, ConfigManager configManager)
     {
         _navigation = navigation;
-        _config = config;
+        _configManager = configManager;
         _navigation.StateMachine.Configure(NavigationStates.GalleryMain)
             .OnEntry(Enter)
             .Permit(NavigationTriggers.CloseGallery, NavigationStates.GameLoaded)
@@ -23,7 +23,7 @@ public class GaleryMainState
 
     private void Enter()
     {
-        var enemiesData = new FinalFantasyMysticQuest(_config, _navigation.RomPath!).GetEnemiesData();
+        var enemiesData = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetEnemiesData();
 
         new MainWindow(_navigation)
             .WithContent(new Rows(

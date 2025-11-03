@@ -32,33 +32,39 @@ public class FinalFantasyMysticQuest
 {
     private readonly GameConfig _config;
     private readonly string _romPath;
+    private byte[]? _originalRomData;
     private byte[]? _romData;
     private readonly List<RomHack> _romHacks;
 
-    public FinalFantasyMysticQuest(GameConfig config, string romPath, FinalFantasyMysticQuest? originalRom = null)
-    {
-        _config = config;
-        _romPath = romPath;
+    private const int BattlefieldBattleLeft = 0x654F0;
 
-        if (originalRom != null)
+    public FinalFantasyMysticQuest(ConfigManager configManager, string romPath, FinalFantasyMysticQuest? originalRom = null)
+    {
+        _config = configManager.Config;
+        _romPath = romPath;
+        _originalRomData = originalRom?.RomData;
+        if (_originalRomData != null)
         {
-            _romData = originalRom.RomData;
+            _romData = new byte[_originalRomData.Length];
+            _originalRomData.CopyTo(_romData, 0);
         }
 
         _romHacks =
         [
             new(
-                HackName: "Enemies Drops Rate",
-                CurrentValue: () => config.EnemiesDropRate,
-                DefaultValue: 3, // TODO read from original rom
-                UpdateValue: value => config.EnemiesDropRate = (byte)value,
-                RunHack: SetEnemiesDropRate),
+                hackName: "Enemies Drops Rate",
+                currentValueFunc: () => _config.EnemiesDropRate,
+                defaultValue: 3, // TODO read from original rom
+                updateValueAction: value => _config.EnemiesDropRate = (byte)value,
+                saveConfigAction: configManager.SaveConfig,
+                runHackAction: SetEnemiesDropRate),
             new(
-                HackName: "Level Forst Enemies Gone",
-                CurrentValue: () => config.LevelForestEnemiesGone,
-                DefaultValue: false,
-                UpdateValue: value => config.LevelForestEnemiesGone = (bool)value,
-                RunHack: SetLevelForestEnemiesGone),
+                hackName: "Level Forst Enemies Gone",
+                currentValueFunc: () => _config.LevelForestEnemiesGone,
+                defaultValue: false,
+                updateValueAction: value => _config.LevelForestEnemiesGone = (bool)value,
+                saveConfigAction: configManager.SaveConfig,
+                runHackAction: SetLevelForestEnemiesGone),
         ];
     }
 
@@ -221,11 +227,12 @@ public class FinalFantasyMysticQuest
 
     public IEnumerable<MapElements> GetMapElements()
     {
-        var levelForestAddress = 0x3B2C1;
+        //var levelForestAddress = 0x3B2C1;
+        var boneDungeon = 0x3B43E;
 
         for (int i = 0; i < 26; i++)
         {
-            yield return ExtractMapElements(levelForestAddress + i * 7);
+            yield return ExtractMapElements(boneDungeon + i * 7);
         }
     }
 
@@ -271,6 +278,9 @@ public class FinalFantasyMysticQuest
             {
                 0x15 => $"Brownie",
                 0x16 => $"Slime",
+                0x18 => $"Poison Toad",
+                0x19 => $"Basilisk",
+                0x1A => $"Sand Worm",
                 _ => $"?",
             };
         }
@@ -292,6 +302,11 @@ public class FinalFantasyMysticQuest
                 0x2C => $"Cure Potion x3",
                 0x2D => $"Cure Potion x3",
                 0x2E => $"Cure Potion x3",
+
+                // Bone Dungeon
+                0x35 => $"Stars x10",
+                0x36 => $"Cure Potion x3",
+                0x37 => $"Stars x10",
                 _ => $"?",
             };
         }
@@ -311,15 +326,57 @@ public class FinalFantasyMysticQuest
         {
             for (int i = 0; i < 8; i++)
             {
-                RomData[0x3B2EE + i * 7] = 0;
+                RomData[0x3B2EE + i * 7] = 5;
             }
 
             File.WriteAllBytes(_romPath, RomData);
         }
     }
+
+    internal void RunHacks()
+    {
+        if (_originalRomData != null)
+        {
+            _romData = new byte[_originalRomData.Length];
+            _originalRomData.CopyTo(_romData, 0);
+        }
+        else
+            throw new InvalidOperationException("Can only be run on rom hack!");
+
+        foreach (var romHack in _romHacks)
+        {
+            if (romHack.CurrentValue.GetType() == typeof(bool))
+            {
+                if ((bool)romHack.CurrentValue)
+                {
+                    romHack.RunHack();
+                }
+            }
+            else
+            {
+                if (!romHack.CurrentValue.Equals(romHack.DefaultValue))
+                {
+                    romHack.RunHack();
+                }
+            }
+        }
+    }
 }
 
-public record RomHack(string HackName, Func<object> CurrentValue, object DefaultValue, Action<object> UpdateValue, Action RunHack);
+public class RomHack(string hackName, Func<object> currentValueFunc, object defaultValue, Action<object> updateValueAction, Action saveConfigAction, Action runHackAction)
+{
+    public string HackName => hackName;
+    public object CurrentValue => currentValueFunc.Invoke();
+    public object DefaultValue => defaultValue;
+
+    public void UpdateValue(object value)
+    {
+        updateValueAction.Invoke(value);
+        saveConfigAction.Invoke();
+    }
+
+    public void RunHack() => runHackAction.Invoke();
+}
 
 public record EnemyData(string Name, int HP, int Strength, int Defense, int Speed, int Magic,
     int StrongElement1, int StrongElement2, int WeakElement, int XP, int Gil, byte[] Raw);

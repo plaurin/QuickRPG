@@ -9,12 +9,12 @@ namespace QuickRPG.Console.States;
 public class MapElementsState
 {
     private readonly Navigation _navigation;
-    private readonly GameConfig _config;
+    private readonly ConfigManager _configManager;
 
-    public MapElementsState(Navigation navigation, GameConfig config)
+    public MapElementsState(Navigation navigation, ConfigManager configManager)
     {
         _navigation = navigation;
-        _config = config;
+        _configManager = configManager;
         _navigation.StateMachine.Configure(NavigationStates.MapElements)
             .OnEntry(Enter)
             .Permit(NavigationTriggers.CloseMapElements, NavigationStates.GalleryMain);
@@ -27,7 +27,7 @@ public class MapElementsState
 
     private void Render()
     {
-        var mapElements = new FinalFantasyMysticQuest(_config, _navigation.RomPath!).GetMapElements();
+        var mapElements = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetMapElements();
 
         new MainWindow(_navigation)
             .WithContent(new Rows(mapElements.Select(map => new Markup(RenderMapElements(map))).ToArray()))
@@ -42,7 +42,7 @@ public class MapElementsState
         var mapY = $"Y [blue]{map.Y:X2}[/]";
         var pal = $"PAL [blue]{map.Palette:X2}[/]";
         var type = $"TYP [blue]{map.Type,-8}[/]";
-        var subType = $"SUB [blue]{map.SubType,-10}[/]";
+        var subType = $"SUB [blue]{map.SubType,-20}[/]";
 
         var raw = string.Join(" ", map.Raw.Select(c => $"{c:X2}"));
 

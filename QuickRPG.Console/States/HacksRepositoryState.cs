@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32.SafeHandles;
-using QuickRPG.Console.Configs;
+﻿using QuickRPG.Console.Configs;
 using QuickRPG.Console.Games;
 using QuickRPG.Console.Rendering;
 using Spectre.Console;
@@ -10,7 +9,7 @@ public class HacksRepositoryState
 {
     private readonly Navigation _navigation;
     private readonly ConfigManager _configManager;
-    private FinalFantasyMysticQuest _hackedRom;
+    private readonly FinalFantasyMysticQuest _hackedRom;
 
     public HacksRepositoryState(Navigation navigation, ConfigManager configManager)
     {
@@ -21,19 +20,20 @@ public class HacksRepositoryState
             .OnEntry(Enter)
             .Permit(NavigationTriggers.CloseHacksRepository, NavigationStates.GameLoaded);
 
-        var originalRom = new FinalFantasyMysticQuest(configManager.Config, configManager.Config.RomPath!);
-        _hackedRom = new FinalFantasyMysticQuest(configManager.Config, configManager.Config.RomHackPath!, originalRom);
+        var originalRom = new FinalFantasyMysticQuest(configManager, configManager.Config.RomPath!);
+        _hackedRom = new FinalFantasyMysticQuest(configManager, configManager.Config.RomHackPath!, originalRom);
     }
 
     private void Enter()
     {
+        _hackedRom.RunHacks();
         Render();
     }
 
     private void Render()
     {
         var hacks = _hackedRom.RomHacks
-            .Select((rh, index) => new Markup($"[yellow]{index + 1}[/] [green]{rh.HackName}:[/] [yellow]{rh.CurrentValue.Invoke()}[/]"));
+            .Select((rh, index) => new Markup($"[yellow]{index + 1}[/] [green]{rh.HackName}:[/] [yellow]{rh.CurrentValue}[/]"));
 
         var content = new Rows(hacks);
 
@@ -56,29 +56,28 @@ public class HacksRepositoryState
         AnsiConsole.Clear();
         AnsiConsole.Cursor.Show();
 
-        var currentValue = romHack.CurrentValue.Invoke();
-        var type = currentValue.GetType();
+        var type = romHack.CurrentValue.GetType();
 
         if (type == typeof(byte))
         {
-            var dropRate = PromptByte(romHack.HackName, (byte)(int)romHack.DefaultValue, (byte)currentValue);
-            romHack.UpdateValue(dropRate);
+            var value = PromptByte(romHack.HackName, (byte)(int)romHack.DefaultValue, (byte)romHack.CurrentValue);
+            romHack.UpdateValue(value);
         }
         else if (type == typeof(bool))
         {
-            var result = PromptBool(romHack.HackName, (bool)romHack.DefaultValue, (bool)currentValue);
-            romHack.UpdateValue(result);
+            var value = PromptBool(romHack.HackName, (bool)romHack.DefaultValue, (bool)romHack.CurrentValue);
+            romHack.UpdateValue(value);
         }
         else
             throw new NotSupportedException($"Type {type} is not supported");
 
-        romHack.RunHack();
+        _hackedRom.RunHacks();
         _configManager.SaveConfig();
 
         Render();
     }
 
-    private byte PromptByte(string title, byte originalValue, byte currentValue)
+    private static byte PromptByte(string title, byte originalValue, byte currentValue)
     {
         var answer = AnsiConsole.Prompt(
             new TextPrompt<byte>($"{title} (original value = {originalValue}) ")
@@ -87,7 +86,7 @@ public class HacksRepositoryState
         return answer;
     }
 
-    private bool PromptBool(string title, bool originalValue, bool currentValue)
+    private static bool PromptBool(string title, bool originalValue, bool currentValue)
     {
         var answer = AnsiConsole.Prompt(
             new TextPrompt<bool>($"{title} (original value = {originalValue}): ")
