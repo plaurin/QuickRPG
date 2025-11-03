@@ -6,5 +6,6 @@ public class GameConfig
     public string RomHackPath { get; set; } = string.Empty;
 
     public byte EnemiesDropRate { get; set; } = 3;
+    public byte BattlefieldsBattleCount { get; set; } = 10;
     public bool LevelForestEnemiesGone { get; set; } = false;
 }

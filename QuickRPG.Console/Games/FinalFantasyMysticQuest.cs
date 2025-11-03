@@ -36,7 +36,7 @@ public class FinalFantasyMysticQuest
     private byte[]? _romData;
     private readonly List<RomHack> _romHacks;
 
-    private const int BattlefieldBattleLeft = 0x654F0;
+    private const int BattlefieldBattleLeft = 0x654D0;
 
     public FinalFantasyMysticQuest(ConfigManager configManager, string romPath, FinalFantasyMysticQuest? originalRom = null)
     {
@@ -58,6 +58,13 @@ public class FinalFantasyMysticQuest
                 updateValueAction: value => _config.EnemiesDropRate = (byte)value,
                 saveConfigAction: configManager.SaveConfig,
                 runHackAction: SetEnemiesDropRate),
+            new(
+                hackName: "Battlefield Battle Count",
+                currentValueFunc: () => _config.BattlefieldsBattleCount,
+                defaultValue: 10, // TODO read from original rom
+                updateValueAction: value => _config.BattlefieldsBattleCount = (byte)value,
+                saveConfigAction: configManager.SaveConfig,
+                runHackAction: SetBattlefieldBattleCount),
             new(
                 hackName: "Level Forst Enemies Gone",
                 currentValueFunc: () => _config.LevelForestEnemiesGone,
@@ -317,7 +324,14 @@ public class FinalFantasyMysticQuest
     public void SetEnemiesDropRate()
     {
         RomData[0x10962] = _config.EnemiesDropRate;
-        File.WriteAllBytes(_romPath, RomData);
+    }
+
+    public void SetBattlefieldBattleCount()
+    {
+        for (int i = 0; i < 21; i++)
+        {
+            RomData[BattlefieldBattleLeft + i] = _config.BattlefieldsBattleCount;
+        }
     }
 
     public void SetLevelForestEnemiesGone()
@@ -328,8 +342,6 @@ public class FinalFantasyMysticQuest
             {
                 RomData[0x3B2EE + i * 7] = 5;
             }
-
-            File.WriteAllBytes(_romPath, RomData);
         }
     }
 
@@ -360,6 +372,8 @@ public class FinalFantasyMysticQuest
                 }
             }
         }
+
+        File.WriteAllBytes(_romPath, RomData);
     }
 }
 
