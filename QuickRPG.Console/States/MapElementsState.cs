@@ -11,6 +11,8 @@ public class MapElementsState
     private readonly Navigation _navigation;
     private readonly ConfigManager _configManager;
 
+    private int offset;
+
     public MapElementsState(Navigation navigation, ConfigManager configManager)
     {
         _navigation = navigation;
@@ -27,10 +29,14 @@ public class MapElementsState
 
     private void Render()
     {
-        var mapElements = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetMapElements();
+        var mapElements = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetMapElements(offset);
 
         new MainWindow(_navigation)
             .WithContent(new Rows(mapElements.Select(map => new Markup(RenderMapElements(map))).ToArray()))
+            .AddCommand("[yellow]Page Up[/]", ConsoleKey.PageUp, PageUp)
+            .AddCommand("[yellow]Page Down[/]", ConsoleKey.PageDown, PageDown)
+            .AddCommand("[yellow]Left[/]", ConsoleKey.LeftArrow, LeftOne)
+            .AddCommand("[yellow]Right[/]", ConsoleKey.RightArrow, RightOne)
             .AddCommand("[green]ESC[/] Close Map Elements", ConsoleKey.Escape, () => { _navigation.StateMachine.Fire(NavigationTriggers.CloseMapElements); })
             .Draw();
     }
@@ -48,4 +54,9 @@ public class MapElementsState
 
         return $"{name} {mapX} {mapY} {pal} {type} {subType} {raw}";
     }
+
+    private void PageUp() { offset -= 24 * 7; Render(); }
+    private void PageDown() { offset += 24 * 7; Render(); }
+    private void LeftOne() { offset--; Render(); }
+    private void RightOne() { offset++; Render(); }
 }
