@@ -159,25 +159,6 @@ public partial class FinalFantasyMysticQuest
         {
             return $"{subType:X2} ?";
         }
-        return $"{subType:X2} " + subType switch
-        {
-            // Level Forest
-            0x15 => $"Brownie",
-            0x16 => $"Slime",
-
-            // Bone Dungeon
-            0x18 => $"Poison Toad",
-            0x19 => $"Basilisk",
-            0x1A => $"Sand Worm",
-            0x1B => $"Roc",
-            0x1C => $"Sand Worm x3",
-            0x1D => $"Skeleton",
-            0x1E => $"Gorgon",
-            0x1F => $"Skeleton",
-            0x20 => $"Minotaur Zombie",
-            0x21 => "Flamerus Rex",
-            _ => $"?",
-        };
     }
 }
 
