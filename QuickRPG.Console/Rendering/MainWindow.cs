@@ -1,6 +1,5 @@
 ﻿using Spectre.Console;
 using Spectre.Console.Rendering;
-using System.Net.Http.Headers;
 
 namespace QuickRPG.Console.Rendering;
 
@@ -8,7 +7,8 @@ public class MainWindow
 {
     private readonly Navigation _navigation;
 
-    private readonly List<(string Text, ConsoleKey HotKey, Action action)> _commands = [];
+    private readonly List<(string Text, ConsoleKey HotKey, Action Action)> _commands = [];
+    private readonly List<(ConsoleKey LetterKey, ConsoleKey DigitKey, int Index, Action<int> Action)> _compositeCommands = [];
     private IRenderable _content = new Markup("[red]No content[/]");
 
     public MainWindow(Navigation navigation)
@@ -28,6 +28,17 @@ public class MainWindow
         return this;
     }
 
+    public MainWindow AddCompositeCommands(int count, Action<int> action)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            var letterKey = ConsoleKey.A + i / 10;
+            var digitKey = ConsoleKey.D0 + i % 10;
+            _compositeCommands.Add((letterKey, digitKey, i, action));
+        }
+        return this;
+    }
+
     public MainWindow WithContent(IRenderable content)
     {
         _content = content;
@@ -42,19 +53,8 @@ public class MainWindow
                 new Layout("Command"));
 
         IRenderable mainContent;
-        //if (_count != null)
-        //{
-        //    mainContent = new Layout("Content")
-        //        .SplitColumns(
-        //            new Layout("Selection").Size(4).,
-        //            new Layout("MainContent", _content)
-        //        );
-        //}
-        //else
-        {
-            mainContent = _content;
-        }
 
+        mainContent = _content;
 
         var mainPanel = new Panel(mainContent)
         {
@@ -63,7 +63,7 @@ public class MainWindow
             Expand = true
         };
 
-        var commands = _commands.Select(c => c.Text);
+        var commands = _commands.Where(c => !string.IsNullOrWhiteSpace(c.Text)).Select(c => c.Text);
 
         var commandPanel = new Panel(new Columns(commands))
         {
@@ -79,15 +79,34 @@ public class MainWindow
         AnsiConsole.Write(layout);
         AnsiConsole.Cursor.Hide();
 
-        while (_commands.Count != 0)
+        ConsoleKey? letterPressed = null;
+        ConsoleKey? digitPressed = null;
+
+        while (_commands.Count != 0 || _compositeCommands.Count != 0)
         {
-            var key = AnsiConsole.Console.Input.ReadKey(true);
+            var readKey =  AnsiConsole.Console.Input.ReadKey(true);
+            var key = readKey?.Key;
+            var modified = readKey?.Modifiers;
+
+            if (key == null) continue;
 
             foreach (var command in _commands)
             {
-                if (key?.Key == command.HotKey)
+                if (key == command.HotKey)
                 {
-                    command.action();
+                    command.Action();
+                    return;
+                }
+            }
+
+            if (key >= ConsoleKey.A && key <= ConsoleKey.Z) letterPressed = key;
+            if (key >= ConsoleKey.D0 && key <= ConsoleKey.D9) digitPressed = key;
+
+            foreach (var command in _compositeCommands)
+            {
+                if (letterPressed == command.LetterKey && digitPressed == command.DigitKey)
+                {
+                    command.Action(command.Index);
                     return;
                 }
             }

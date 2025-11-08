@@ -9,5 +9,6 @@ public enum NavigationStates
     GalleryMain,
     EnemiesGallery,
     EnemyDetails,
+    MapsGallery,
     MapElements,
 }

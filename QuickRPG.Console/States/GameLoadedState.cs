@@ -16,6 +16,7 @@ public class GameLoadedState
     {
         _navigation = navigation;
         _configManager = configManager;
+
         LoadGameTrigger = _navigation.StateMachine.SetTriggerParameters<string>(NavigationTriggers.LoadGame);
 
         _navigation.StateMachine.Configure(NavigationStates.GameLoaded)

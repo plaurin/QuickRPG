@@ -21,8 +21,12 @@ public class Navigation
         _noGameLoadedState = new NoGameLoadedState(this);
         GameLoadedState = new GameLoadedState(this, configManager);
         GaleryMainState = new GaleryMainState(this, configManager);
+
         EnemiesGaleryState = new EnemiesGaleryState(this, configManager);
+
+        MapsGaleryState = new MapsGaleryState(this, configManager);
         MapElementsState = new MapElementsState(this, configManager);
+
         HacksRepositoryState = new HacksRepositoryState(this, configManager);
     }
 
@@ -38,6 +42,7 @@ public class Navigation
     public GameLoadedState GameLoadedState { get; }
     public GaleryMainState GaleryMainState { get; }
     public EnemiesGaleryState EnemiesGaleryState { get; }
+    public MapsGaleryState MapsGaleryState { get; }
     public MapElementsState MapElementsState { get; }
     public HacksRepositoryState HacksRepositoryState { get; }
 }

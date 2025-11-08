@@ -2,7 +2,7 @@
 using QuickRPG.Console.Games;
 using QuickRPG.Console.Rendering;
 using Spectre.Console;
-using System;
+using Stateless;
 
 namespace QuickRPG.Console.States;
 
@@ -11,19 +11,28 @@ public class MapElementsState
     private readonly Navigation _navigation;
     private readonly ConfigManager _configManager;
 
+    private MapData _mapData;
     private int offset;
 
     public MapElementsState(Navigation navigation, ConfigManager configManager)
     {
         _navigation = navigation;
         _configManager = configManager;
+
+        MapSelectedTrigger = _navigation.StateMachine.SetTriggerParameters<MapData>(NavigationTriggers.OpenMapElements);
+
         _navigation.StateMachine.Configure(NavigationStates.MapElements)
-            .OnEntry(Enter)
-            .Permit(NavigationTriggers.CloseMapElements, NavigationStates.GalleryMain);
+            .OnEntryFrom(MapSelectedTrigger, Enter)
+            .Permit(NavigationTriggers.CloseMapElements, NavigationStates.MapsGallery);
+
     }
 
-    private void Enter()
+    public StateMachine<NavigationStates, NavigationTriggers>.TriggerWithParameters<MapData> MapSelectedTrigger { get; }
+
+    private void Enter(MapData mapData)
     {
+        _mapData = mapData;
+        offset = _mapData.ElementsOffset;
         Render();
     }
 

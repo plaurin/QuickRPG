@@ -16,6 +16,10 @@ public enum NavigationTriggers
     CloseEnemyDetails,
     NextEnemyDetails,
 
+    OpenMapsGallery,
+    CloseMapsGallery,
     OpenMapElements,
     CloseMapElements,
+    NextMapElement,
+    PreviousMapElement,
 }
