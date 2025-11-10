@@ -32,11 +32,9 @@ public class GameLoadedState
 
     private void Enter(string game)
     {
-        _navigation.Game = game;
+        _navigation.SetPaths();
 
-        //var configFile = File.ReadAllText("config.toml");
-        //var tomlConfig = Toml.ToModel<GameConfig>(configFile);
-        
+        _navigation.Game = game;
         _navigation.RomPath = _configManager.Config.RomPath;
         _navigation.RomHackPath = _configManager.Config.RomHackPath;
 
@@ -45,6 +43,8 @@ public class GameLoadedState
 
     private void Enter()
     {
+        _navigation.SetPaths();
+
         Render();
     }
 

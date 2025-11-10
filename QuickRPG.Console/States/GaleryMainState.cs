@@ -24,6 +24,8 @@ public class GaleryMainState
 
     private void Enter()
     {
+        _navigation.SetPaths("Gallery");
+
         var enemiesData = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetEnemiesData();
         var mapsData = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetMapsData();
 

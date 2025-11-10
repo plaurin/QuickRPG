@@ -26,6 +26,8 @@ public class HacksRepositoryState
 
     private void Enter()
     {
+        _navigation.SetPaths("Hacks");
+
         _hackedRom.RunHacks();
         Render();
     }

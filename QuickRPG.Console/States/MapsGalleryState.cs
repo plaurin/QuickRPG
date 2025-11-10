@@ -27,6 +27,8 @@ public class MapsGaleryState
 
     private void Enter()
     {
+        _navigation.SetPaths("Gallery", "Maps");
+
         Render();
     }
 

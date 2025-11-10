@@ -24,13 +24,14 @@ public class MapElementsState
         _navigation.StateMachine.Configure(NavigationStates.MapElements)
             .OnEntryFrom(MapSelectedTrigger, Enter)
             .Permit(NavigationTriggers.CloseMapElements, NavigationStates.MapsGallery);
-
     }
 
     public StateMachine<NavigationStates, NavigationTriggers>.TriggerWithParameters<MapData> MapSelectedTrigger { get; }
 
     private void Enter(MapData mapData)
     {
+        _navigation.SetPaths("Gallery", "Maps", mapData.Name);
+
         _mapData = mapData;
         offset = _mapData.ElementsOffset;
         Render();

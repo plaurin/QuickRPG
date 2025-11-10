@@ -25,6 +25,8 @@ public class EnemiesGaleryState
 
     private void Enter()
     {
+        _navigation.SetPaths("Gallery", "Enemies");
+
         Render();
     }
 
