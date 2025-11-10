@@ -11,35 +11,49 @@ public class MapElementsState
     private readonly Navigation _navigation;
     private readonly ConfigManager _configManager;
 
-    private MapData _mapData;
-    private int offset;
+    private int _offset;
+    private int? _previousMapIndex;
+    private int? _nextMapIndex;
 
     public MapElementsState(Navigation navigation, ConfigManager configManager)
     {
         _navigation = navigation;
         _configManager = configManager;
 
-        MapSelectedTrigger = _navigation.StateMachine.SetTriggerParameters<MapData>(NavigationTriggers.OpenMapElements);
+        MapSelectedTrigger = _navigation.StateMachine.SetTriggerParameters<int>(NavigationTriggers.OpenMapElements);
+        PreviousMapTrigger = _navigation.StateMachine.SetTriggerParameters<int>(NavigationTriggers.PreviousMapElement);
+        NextMapTrigger = _navigation.StateMachine.SetTriggerParameters<int>(NavigationTriggers.NextMapElement);
 
         _navigation.StateMachine.Configure(NavigationStates.MapElements)
+            .PermitReentry(NavigationTriggers.PreviousMapElement)
+            .PermitReentry(NavigationTriggers.NextMapElement)
             .OnEntryFrom(MapSelectedTrigger, Enter)
+            .OnEntryFrom(PreviousMapTrigger, Enter)
+            .OnEntryFrom(NextMapTrigger, Enter)
             .Permit(NavigationTriggers.CloseMapElements, NavigationStates.MapsGallery);
     }
 
-    public StateMachine<NavigationStates, NavigationTriggers>.TriggerWithParameters<MapData> MapSelectedTrigger { get; }
+    public StateMachine<NavigationStates, NavigationTriggers>.TriggerWithParameters<int> MapSelectedTrigger { get; }
+    public StateMachine<NavigationStates, NavigationTriggers>.TriggerWithParameters<int> PreviousMapTrigger { get; }
+    public StateMachine<NavigationStates, NavigationTriggers>.TriggerWithParameters<int> NextMapTrigger { get; }
 
-    private void Enter(MapData mapData)
+    private void Enter(int mapIndex)
     {
+        var mapsData = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetMapsData();
+        var mapData = mapsData.ElementAt(mapIndex);
+
         _navigation.SetPaths("Gallery", "Maps", mapData.Name);
 
-        _mapData = mapData;
-        offset = _mapData.ElementsOffset;
+        _offset = mapData.ElementsOffset;
+        _previousMapIndex = mapIndex > 0 ? mapIndex - 1 : null;
+        _nextMapIndex = mapIndex < mapsData.Count() - 1 ? mapIndex + 1 : null;
+
         Render();
     }
 
     private void Render()
     {
-        var mapElements = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetMapElements(offset);
+        var mapElements = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetMapElements(_offset);
 
         new MainWindow(_navigation)
             .WithContent(new Rows(mapElements.Select(map => new Markup(RenderMapElements(map))).ToArray()))
@@ -47,6 +61,8 @@ public class MapElementsState
             .AddCommand("[yellow]Page Down[/]", ConsoleKey.PageDown, PageDown)
             .AddCommand("[yellow]Left[/]", ConsoleKey.LeftArrow, LeftOne)
             .AddCommand("[yellow]Right[/]", ConsoleKey.RightArrow, RightOne)
+            .AddCommandIf(_previousMapIndex != null, "[yellow]Shift+Tab[/] Previous Map", ConsoleModifiers.Shift, ConsoleKey.Tab, PreviousMap)
+            .AddCommandIf(_nextMapIndex != null, "[yellow]Tab[/] Next Map", ConsoleKey.Tab, NextMap)
             .AddCommand("[green]ESC[/] Close Map Elements", ConsoleKey.Escape, () => { _navigation.StateMachine.Fire(NavigationTriggers.CloseMapElements); })
             .Draw();
     }
@@ -65,8 +81,12 @@ public class MapElementsState
         return $"{name} {mapX} {mapY} {pal} {type} {subType} {raw}";
     }
 
-    private void PageUp() { offset -= 24 * 7; Render(); }
-    private void PageDown() { offset += 24 * 7; Render(); }
-    private void LeftOne() { offset--; Render(); }
-    private void RightOne() { offset++; Render(); }
+    private void PageUp() { _offset -= (MainWindow.PageSize - 1) * 7; Render(); }
+    private void PageDown() { _offset += (MainWindow.PageSize - 1) * 7; Render(); }
+    private void LeftOne() { _offset--; Render(); }
+    private void RightOne() { _offset++; Render(); }
+
+    private void PreviousMap() => _navigation.StateMachine.Fire(_navigation.MapElementsState.PreviousMapTrigger, _previousMapIndex);
+    private void NextMap() => _navigation.StateMachine.Fire(_navigation.MapElementsState.NextMapTrigger, _nextMapIndex);
+
 }

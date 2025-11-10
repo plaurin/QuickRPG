@@ -7,9 +7,11 @@ public class MainWindow
 {
     private readonly Navigation _navigation;
 
-    private readonly List<(string Text, ConsoleKey HotKey, Action Action)> _commands = [];
+    private readonly List<(string Text, ConsoleModifiers Modifiers, ConsoleKey HotKey, Action Action)> _commands = [];
     private readonly List<(ConsoleKey LetterKey, ConsoleKey DigitKey, int Index, Action<int> Action)> _compositeCommands = [];
     private IRenderable _content = new Markup("[red]No content[/]");
+
+    public static int PageSize => AnsiConsole.Profile.Height - 5;
 
     public MainWindow(Navigation navigation)
     {
@@ -18,13 +20,31 @@ public class MainWindow
 
     public MainWindow AddCommand(string text, ConsoleKey hotkey, Action action)
     {
-        _commands.Add((text, hotkey, action));
+        _commands.Add((text, ConsoleModifiers.None, hotkey, action));
         return this;
     }
 
-    public MainWindow AddCommandWithoutText(ConsoleKey hotkey, Action action)
+    public MainWindow AddCommandIf(bool predicate, string text, ConsoleKey hotkey, Action action)
     {
-        _commands.Add(("", hotkey, action));
+        if (predicate) _commands.Add((text, ConsoleModifiers.None, hotkey, action));
+        return this;
+    }
+
+    public MainWindow AddCommand(string text, ConsoleModifiers modifiers, ConsoleKey hotkey, Action action)
+    {
+        _commands.Add((text, modifiers, hotkey, action));
+        return this;
+    }
+
+    public MainWindow AddCommandIf(bool predicate, string text, ConsoleModifiers modifiers, ConsoleKey hotkey, Action action)
+    {
+        if (predicate) _commands.Add((text, modifiers, hotkey, action));
+        return this;
+    }
+
+    public MainWindow AddCommand(ConsoleKey hotkey, Action action)
+    {
+        _commands.Add(("", ConsoleModifiers.None, hotkey, action));
         return this;
     }
 
@@ -86,13 +106,13 @@ public class MainWindow
         {
             var readKey =  AnsiConsole.Console.Input.ReadKey(true);
             var key = readKey?.Key;
-            var modified = readKey?.Modifiers;
+            var modifiers = readKey?.Modifiers;
 
             if (key == null) continue;
 
             foreach (var command in _commands)
             {
-                if (key == command.HotKey)
+                if (key == command.HotKey && modifiers == command.Modifiers)
                 {
                     command.Action();
                     return;

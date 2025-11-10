@@ -9,7 +9,6 @@ public class MapsGaleryState
 {
     private readonly Navigation _navigation;
     private readonly ConfigManager _configManager;
-    private int _selectionIndex;
     private int _selectionCount;
     private int _pageIndex;
     private int _pageSize;
@@ -37,7 +36,7 @@ public class MapsGaleryState
         _mapsData = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetMapsData();
 
         _selectionCount = _mapsData.Count();
-        _pageSize = AnsiConsole.Profile.Height - 5;
+        _pageSize = MainWindow.PageSize;
 
         _mapsData = _mapsData.Skip(_pageIndex * _pageSize).Take(_pageSize);
 
@@ -64,10 +63,7 @@ public class MapsGaleryState
         return $"{prefix[index / 10]}{index % 10}";
     }
 
-    private void OpenMap(int mapIndex)
-    {
-        _navigation.StateMachine.Fire(_navigation.MapElementsState.MapSelectedTrigger, _mapsData.ElementAt(mapIndex));
-    }
+    private void OpenMap(int mapIndex) => _navigation.StateMachine.Fire(_navigation.MapElementsState.MapSelectedTrigger, mapIndex);
 
     private void PageUp()
     {

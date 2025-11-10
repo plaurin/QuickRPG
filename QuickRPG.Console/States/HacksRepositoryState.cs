@@ -46,7 +46,7 @@ public class HacksRepositoryState
         var index = 0;
         foreach (var romHack in _hackedRom.RomHacks)
         {
-            window.AddCommandWithoutText(ConsoleKey.D1 + index, () => ActivateHack(romHack));
+            window.AddCommand(ConsoleKey.D1 + index, () => ActivateHack(romHack));
             index++;
         }
 
