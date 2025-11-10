@@ -53,7 +53,7 @@ public class MapElementsState
 
     private void Render()
     {
-        var mapElements = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetMapElements(_offset);
+        var mapElements = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).ExtractMapElements(_offset - 14, MainWindow.PageSize);
 
         new MainWindow(_navigation)
             .WithContent(new Rows(mapElements.Select(map => new Markup(RenderMapElements(map))).ToArray()))
@@ -67,18 +67,22 @@ public class MapElementsState
             .Draw();
     }
 
-    private string RenderMapElements(MapElements map)
+    private string RenderMapElements(MapElement map)
     {
-        var name = $"[green]{map.Name,-15}[/]";
-        var mapX = $"X [blue]{map.X:X2}[/]";
-        var mapY = $"Y [blue]{map.Y:X2}[/]";
-        var pal = $"PAL [blue]{map.Palette:X2}[/]";
-        var type = $"TYP [blue]{map.Type,-8}[/]";
-        var subType = $"SUB [blue]{map.SubType,-20}[/]";
+        var green = map.Type.Contains("?") ? "grey" : "green";
+        var blue = map.Type.Contains("?") ? "grey" : "blue";
+        var white = map.Type.Contains("?") ? "grey" : "white";
+
+        var name = $"[{green}]{map.Name,-5}[/]";
+        var mapX = $"X [{blue}]{map.X:X2}[/]";
+        var mapY = $"Y [{blue}]{map.Y:X2}[/]";
+        var pal = $"PAL [{blue}]{map.Palette:X2}[/]";
+        var type = $"TYP [{blue}]{map.Type,-8}[/]";
+        var subType = $"SUB [{blue}]{map.SubType,-20}[/]";
 
         var raw = string.Join(" ", map.Raw.Select(c => $"{c:X2}"));
 
-        return $"{name} {mapX} {mapY} {pal} {type} {subType} {raw}";
+        return $"{name} {mapX} {mapY} {pal} {type} {subType} [{white}]{raw}[/]";
     }
 
     private void PageUp() { _offset -= (MainWindow.PageSize - 1) * 7; Render(); }

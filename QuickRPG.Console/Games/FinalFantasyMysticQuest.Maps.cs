@@ -135,15 +135,30 @@ public partial class FinalFantasyMysticQuest
         yield return new MapData("Mac's Ship 3", 0x3D439, 25);
     }
 
-    public IEnumerable<MapElements> GetMapElements(int offset = 0)
+    public int ExtractMapEnemiesCount(int offset = 0) => ExtractMapElements(offset).Count(me => me.Type.Contains("Enemy"));
+
+    public int ExtractMapChestsCount(int offset = 0) => ExtractMapElements(offset).Count(me => me.Type.Contains("Chest"));
+
+    public IEnumerable<MapElement> ExtractMapElements(int offset)
     {
-        for (int i = 0;i < 26;i++)
+        while (true)
         {
-            yield return ExtractMapElements(offset + i * 7 - 14);
+            var mapElement = ExtractMapElement(offset);
+            if (mapElement.Type.Contains("?")) break;
+            yield return mapElement;
+            offset += 7;
         }
     }
 
-    private MapElements ExtractMapElements(int offset)
+    public IEnumerable<MapElement> ExtractMapElements(int offset, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            yield return ExtractMapElement(offset + i * 7);
+        }
+    }
+
+    private MapElement ExtractMapElement(int offset)
     {
         var endOffset = offset + 7;
 
@@ -154,7 +169,7 @@ public partial class FinalFantasyMysticQuest
         var type = RomData[offset + 5];
         var raw = RomData[offset..endOffset];
 
-        return new MapElements($"{offset:X}", ExtractMapX(type, mapX), ExtractMapY(type, mapY), ExtractMapElementType(type), ExtractMapElementSubType(type, subType), palette, raw);
+        return new MapElement($"{offset:X}", ExtractMapX(type, mapX), ExtractMapY(type, mapY), ExtractMapElementType(type), ExtractMapElementSubType(type, subType), palette, raw);
     }
 
     private byte ExtractMapX(byte type, byte x)
@@ -195,4 +210,4 @@ public partial class FinalFantasyMysticQuest
 
 public record MapData(string Name, int ElementsOffset, int ElementsCount);
 
-public record MapElements(string Name, int X, int Y, string Type, string SubType, int Palette, byte[] Raw);
+public record MapElement(string Name, int X, int Y, string Type, string SubType, int Palette, byte[] Raw);

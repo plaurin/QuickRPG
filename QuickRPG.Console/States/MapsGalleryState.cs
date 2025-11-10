@@ -12,6 +12,8 @@ public class MapsGaleryState
     private int _selectionCount;
     private int _pageIndex;
     private int _pageSize;
+
+    private FinalFantasyMysticQuest _game;
     private IEnumerable<MapData> _mapsData;
 
     public MapsGaleryState(Navigation navigation, ConfigManager configManager)
@@ -33,7 +35,8 @@ public class MapsGaleryState
 
     private void Render()
     {
-        _mapsData = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!).GetMapsData();
+        _game = new FinalFantasyMysticQuest(_configManager, _navigation.RomPath!);
+        _mapsData = _game.GetMapsData();
 
         _selectionCount = _mapsData.Count();
         _pageSize = MainWindow.PageSize;
@@ -53,8 +56,10 @@ public class MapsGaleryState
     {
         var selector = $"[yellow]{RowIndex(index)}[/]";
         var name = $"[green]{map.Name,-17}[/]";
+        var enemies = $"Enemies [blue]{_game.ExtractMapEnemiesCount( map.ElementsOffset),2}[/]";
+        var chests = $"Chests [blue]{_game.ExtractMapChestsCount(map.ElementsOffset),2}[/]";
 
-        return $"{selector} {name}";
+        return $"{selector} {name} {enemies} {chests}";
     }
 
     private string RowIndex(int index)
