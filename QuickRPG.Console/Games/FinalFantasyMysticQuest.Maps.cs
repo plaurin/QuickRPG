@@ -1,30 +1,4 @@
-﻿using QuickRPG.Console.Configs;
-
-namespace QuickRPG.Console.Games;
-
-// https://wiki.superfamicom.org/final-fantasy-mystic-quest#monster-chart
-// https://gamefaqs.gamespot.com/boards/532476-final-fantasy-mystic-quest/66150631
-// https://datacrystal.tcrf.net/wiki/Final_Fantasy:_Mystic_Quest/RAM_map
-// https://finalfantasy.fandom.com/wiki/Final_Fantasy_Mystic_Quest_enemies
-// https://mikesrpgcenter.com/ffmq/bestiary.html
-// https://gamefaqs.gamespot.com/snes/532476-final-fantasy-mystic-quest/faqs/39031
-
-// AddGainedXPMaybe $1096F
-// IncXP_X $2874
-// IncXP_Y $289B
-
-// XPTooMaybe $3369
-// CheckMaybeXP $009E
-// Experience $1011
-// GainXpMaybe $04A0
-
-// DropMultiply $10962
-
-// Level Forest Chest $0ECD-0ECE
-
-// $0C40-$0DF0 Sprite Animation?
-
-// Remove 1st slime LeveL Forest $3B318 = 0 
+﻿namespace QuickRPG.Console.Games;
 
 public partial class FinalFantasyMysticQuest
 {
@@ -95,70 +69,70 @@ public partial class FinalFantasyMysticQuest
 
     public IEnumerable<MapData> GetMapsData()
     {
-        yield return new MapData("Level Forest", LevelForestMapElements, 25);
+        yield return new MapData("Level Forest", 0x3B2EB, 25);
         
-        yield return new MapData("Bone Dungeon 1F", BoneDungeon1FMapElements, 17);
-        yield return new MapData("Bone Dungeon B1", BoneDungeonB1MapElements, 25);
-        yield return new MapData("Bone Dungeon B2", BoneDungeonB2MapElements, 25);
+        yield return new MapData("Bone Dungeon 1F", 0x3B445, 17);
+        yield return new MapData("Bone Dungeon B1", 0x3B4CC, 25);
+        yield return new MapData("Bone Dungeon B2", 0x3B568, 25);
         
-        yield return new MapData("Wintry Cave 1", WintryCaveMapElements, 25);
-        yield return new MapData("Wintry Cave 2", WintryCave2MapElements, 25);
-        yield return new MapData("Wintry Cave 3", WintryCave3MapElements, 25);
+        yield return new MapData("Wintry Cave 1", 0x3B760, 25);
+        yield return new MapData("Wintry Cave 2", 0x3B7EE, 25);
+        yield return new MapData("Wintry Cave 3", 0x3B883, 25);
         
-        yield return new MapData("Fall Basin", FallBasinMapElements, 25);
+        yield return new MapData("Fall Basin", 0x3B8E0, 25);
         
-        yield return new MapData("Unknown Map 1", MapElements, 25);
+        yield return new MapData("Unknown Map 1", 0x3B9FE, 25);
 
-        yield return new MapData("Ice Pyramid 1", IcePyramidMapElements, 25);
-        yield return new MapData("Ice Pyramid 2", IcePyramid2MapElements, 25);
-        yield return new MapData("Ice Pyramid 3", IcePyramid3MapElements, 25);
-        yield return new MapData("Ice Pyramid 4", IcePyramid4MapElements, 25);
+        yield return new MapData("Ice Pyramid 1", 0x3BA85, 25);
+        yield return new MapData("Ice Pyramid 2", 0x3BB21, 25);
+        yield return new MapData("Ice Pyramid 3", 0x3BBC4, 25);
+        yield return new MapData("Ice Pyramid 4", 0x3BC67, 25);
 
-        yield return new MapData("Unknown Map 2", MapElements2, 25);
-        yield return new MapData("Unknown Map 3", MapElements3, 25);
-        yield return new MapData("Unknown Map 4", MapElements4, 25);
+        yield return new MapData("Unknown Map 2", 0x3BCFC, 25);
+        yield return new MapData("Unknown Map 3", 0x3BD59, 25);
+        yield return new MapData("Unknown Map 4", 0x3BE2E, 25);
         
-        yield return new MapData("Mine 1", MineMapElements, 25);
-        yield return new MapData("Mine 2", MineMap2Elements, 25);
-        yield return new MapData("Mine 3", MineMap3Elements, 25);
+        yield return new MapData("Mine 1", 0x3BF7F, 25);
+        yield return new MapData("Mine 2", 0x3BFD5, 25);
+        yield return new MapData("Mine 3", 0x3C086, 25);
 
-        yield return new MapData("Volcano 1", VolcanoMapElements, 25);
-        yield return new MapData("Volcano 2", VolcanoMap2Elements, 25);
-        yield return new MapData("Volcano 3", VolcanoMap3Elements, 25);
-        yield return new MapData("Volcano 4", VolcanoMap4Elements, 25);
-        yield return new MapData("Volcano 5", VolcanoMap5Elements, 25);
-        yield return new MapData("Volcano 6", VolcanoMap6Elements, 25);
-        yield return new MapData("Volcano 7", VolcanoMap7Elements, 25);
-        yield return new MapData("Volcano 8", VolcanoMap8Elements, 25);
-        yield return new MapData("Volcano 9", VolcanoMap9Elements, 25);
-        yield return new MapData("Volcano 10", VolcanoMap10Elements, 25);
-        yield return new MapData("Volcano 11", VolcanoMap11Elements, 25);
+        yield return new MapData("Volcano 1", 0x3C0EC, 25);
+        yield return new MapData("Volcano 2", 0x3C16C, 25);
+        yield return new MapData("Volcano 3", 0x3C1EC, 25);
+        yield return new MapData("Volcano 4", 0x3C22D, 25);
+        yield return new MapData("Volcano 5", 0x3C2C2, 25);
+        yield return new MapData("Volcano 6", 0x3C365, 25);
+        yield return new MapData("Volcano 7", 0x3C401, 25);
+        yield return new MapData("Volcano 8", 0x3C488, 25);
+        yield return new MapData("Volcano 9", 0x3C51D, 25);
+        yield return new MapData("Volcano 10", 0x3C5B2, 25);
+        yield return new MapData("Volcano 11", 0x3C624, 25);
 
-        yield return new MapData("Unknown Map 5", MapElements5, 25);
+        yield return new MapData("Unknown Map 5", 0x3C683, 25);
         
-        yield return new MapData("Alive Forest 1", AliveForestMapElements, 25);
-        yield return new MapData("Alive Forest 2", AliveForestMap2Elements, 25);
+        yield return new MapData("Alive Forest 1", 0x3C6B6, 25);
+        yield return new MapData("Alive Forest 2", 0x3C73C, 25);
         
-        yield return new MapData("Giant Tree", GiantTreeMapElements, 25);
+        yield return new MapData("Giant Tree", 0x3CA1E, 25);
         
-        yield return new MapData("Mount Gale", MountGaleMapElements, 25);
+        yield return new MapData("Mount Gale", 0x3CB7B, 25);
 
-        yield return new MapData("Unknown Map 6", MapElements6, 25);
+        yield return new MapData("Unknown Map 6", 0x3CDBF, 25);
 
-        yield return new MapData("Pazuzu Tower 1", PazuzuTowerMapElements, 25);
-        yield return new MapData("Pazuzu Tower 2", PazuzuTowerMap2Elements, 25);
-        yield return new MapData("Pazuzu Tower 3", PazuzuTowerMap3Elements, 25);
-        yield return new MapData("Pazuzu Tower 4", PazuzuTowerMap4Elements, 25);
-        yield return new MapData("Pazuzu Tower 5", PazuzuTowerMap5Elements, 25);
-        yield return new MapData("Pazuzu Tower 6", PazuzuTowerMap6Elements, 25);
+        yield return new MapData("Pazuzu Tower 1", 0x3CE95, 25);
+        yield return new MapData("Pazuzu Tower 2", 0x3CF2A, 25);
+        yield return new MapData("Pazuzu Tower 3", 0x3CFCD, 25);
+        yield return new MapData("Pazuzu Tower 4", 0x3D069, 25);
+        yield return new MapData("Pazuzu Tower 5", 0x3D0F5, 25);
+        yield return new MapData("Pazuzu Tower 6", 0x3D1A8, 25);
 
-        yield return new MapData("Unknown Map 7", MapElements7, 25);
-        yield return new MapData("Unknown Map 8", MapElements8, 25);
-        yield return new MapData("Unknown Map 9", MapElements9, 25);
+        yield return new MapData("Unknown Map 7", 0x3D256, 25);
+        yield return new MapData("Unknown Map 8", 0x3D274, 25);
+        yield return new MapData("Unknown Map 9", 0x3D292, 25);
 
-        yield return new MapData("Mac's Ship 1", MacsShipMapElements, 25);
-        yield return new MapData("Mac's Ship 2", MacsShipMap2Elements, 25);
-        yield return new MapData("Mac's Ship 3", MacsShipMap3Elements, 25);
+        yield return new MapData("Mac's Ship 1", 0x3D301, 25);
+        yield return new MapData("Mac's Ship 2", 0x3D39D, 25);
+        yield return new MapData("Mac's Ship 3", 0x3D439, 25);
     }
 
     public IEnumerable<MapElements> GetMapElements(int offset = 0)
