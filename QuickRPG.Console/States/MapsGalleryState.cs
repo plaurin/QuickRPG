@@ -58,8 +58,10 @@ public class MapsGaleryState
         var name = $"[green]{map.Name,-17}[/]";
         var enemies = $"Enemies [blue]{_game.ExtractMapEnemiesCount( map.ElementsOffset),2}[/]";
         var chests = $"Chests [blue]{_game.ExtractMapChestsCount(map.ElementsOffset),2}[/]";
+        var uniques = $"Uniques [yellow]{_game.ExtractMapUniquesCount(map.ElementsOffset),2}[/]";
+        var drops = $"Drops [purple]{_game.ExtractMapDropsCount(map.ElementsOffset),2}[/]";
 
-        return $"{selector} {name} {enemies} {chests}";
+        return $"{selector} {name} {enemies} {chests} {uniques} {drops}";
     }
 
     private string RowIndex(int index)

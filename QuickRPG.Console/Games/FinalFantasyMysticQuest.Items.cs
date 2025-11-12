@@ -26,9 +26,9 @@ public partial class FinalFantasyMysticQuest
         AddItemData("Quake",        0x07);
         AddItemData("Sand Coin",    0x08);
         
-        AddItemData("Empty",        0x09);
+        AddItemData("Libra Crest",  0x09);
 
-        AddItemData("Heal",         0x0A);
+        AddItemData("Heal",         0x0A); // Charm Claw from Mine?
         AddItemData("Knight Sword", 0x0B);
         AddItemData("Noble Armor",  0x0C);
         AddItemData("Magic Mirror", 0x0D);

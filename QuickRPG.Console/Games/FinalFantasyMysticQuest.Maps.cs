@@ -74,22 +74,24 @@ public partial class FinalFantasyMysticQuest
         yield return new MapData("Bone Dungeon 1F", 0x3B445, 17);
         yield return new MapData("Bone Dungeon B1", 0x3B4CC, 25);
         yield return new MapData("Bone Dungeon B2", 0x3B568, 25);
+        yield return new MapData("Bone Dungeon B2-2", 0x3B619, 25);
         
-        yield return new MapData("Wintry Cave 1", 0x3B760, 25);
-        yield return new MapData("Wintry Cave 2", 0x3B7EE, 25);
-        yield return new MapData("Wintry Cave 3", 0x3B883, 25);
+        yield return new MapData("Wintry Cave 1F", 0x3B760, 25);
+        yield return new MapData("Wintry Cave 2F", 0x3B7EE, 25);
+        yield return new MapData("Wintry Cave 3F", 0x3B883, 25);
+        yield return new MapData("Wintry Cave 3F-2", 0x3B8E0, 25);
         
-        yield return new MapData("Fall Basin", 0x3B8E0, 25);
+        yield return new MapData("Fall Basin", 0x3B9A1, 25);
         
-        yield return new MapData("Unknown Map 1", 0x3B9FE, 25);
+        yield return new MapData("Ice Pyramid 6F", 0x3B9FE, 25);
 
         yield return new MapData("Ice Pyramid 1", 0x3BA85, 25);
         yield return new MapData("Ice Pyramid 2", 0x3BB21, 25);
         yield return new MapData("Ice Pyramid 3", 0x3BBC4, 25);
         yield return new MapData("Ice Pyramid 4", 0x3BC67, 25);
+        yield return new MapData("Ice Pyramid 5", 0x3BCFC, 25);
+        yield return new MapData("Ice Pyramid 5-2", 0x3BD59, 25);
 
-        yield return new MapData("Unknown Map 2", 0x3BCFC, 25);
-        yield return new MapData("Unknown Map 3", 0x3BD59, 25);
         yield return new MapData("Unknown Map 4", 0x3BE2E, 25);
         
         yield return new MapData("Mine 1", 0x3BF7F, 25);
@@ -136,8 +138,9 @@ public partial class FinalFantasyMysticQuest
     }
 
     public int ExtractMapEnemiesCount(int offset = 0) => ExtractMapElements(offset).Count(me => me.Type.Contains("Enemy"));
-
     public int ExtractMapChestsCount(int offset = 0) => ExtractMapElements(offset).Count(me => me.Type.Contains("Chest"));
+    public int ExtractMapUniquesCount(int offset = 0) => ExtractMapElements(offset).Count(me => me.Type.Contains("Uniqu"));
+    public int ExtractMapDropsCount(int offset = 0) => ExtractMapElements(offset).Count(me => me.Type.Contains("Drop"));
 
     public IEnumerable<MapElement> ExtractMapElements(int offset)
     {
@@ -162,6 +165,7 @@ public partial class FinalFantasyMysticQuest
     {
         var endOffset = offset + 7;
 
+        var unique = RomData[offset + 0];
         var subType = RomData[offset + 1];
         var mapY = RomData[offset + 2];
         var mapX = RomData[offset + 3];
@@ -169,37 +173,50 @@ public partial class FinalFantasyMysticQuest
         var type = RomData[offset + 5];
         var raw = RomData[offset..endOffset];
 
-        return new MapElement($"{offset:X}", ExtractMapX(type, mapX), ExtractMapY(type, mapY), ExtractMapElementType(type), ExtractMapElementSubType(type, subType), palette, raw);
+        return new MapElement(
+            $"{offset:X}",
+            ExtractMapX(type, mapX),
+            ExtractMapY(type, mapY),
+            ExtractMapElementType(type, unique, subType),
+            ExtractMapElementSubType(type, subType),
+            palette,
+            raw);
     }
+
+    private static bool IsEnemy(byte type) => type == 0x0B || type == 0x09 || type == 0x0C;
+    private static bool IsChest(byte type) => type == 0x13 || type == 0x11 || type == 0x14;
+    private static bool IsObject(byte type, byte unique) => type == 0x03 && unique == 0xFE;
+    private static bool IsDrop(byte type) => type == 0x1B;
 
     private byte ExtractMapX(byte type, byte x)
     {
-        return type == 0x13 ? (byte)(x - 0x00) : x;
+        return IsChest(type) || IsDrop(type) ? (byte)(x - 0x00) : x;
     }
 
     private byte ExtractMapY(byte type, byte y)
     {
-        return type == 0x13 ? (byte)(y - 0x40) : y;
+        return IsChest(type) || IsDrop(type) ? (byte)(y - 0x40) : y;
     }
 
-    private string ExtractMapElementType(byte type)
+    private string ExtractMapElementType(byte type, byte unique, byte subType)
     {
-        return $"{type:X2} " + type switch
-        {
-            0x0B => "Enemy",
-            0x13 => "Chest",
-            _ => $"?",
-        };
+        if (IsChest(type) && unique - subType == 0xA9) return $"{type:X2} Uniqu";
+        if (IsChest(type) && unique != 0x00) return $"{type:X2} Uniq?";
+        if (IsChest(type) && unique == 0x00) return $"{type:X2} Chest";
+        if (IsEnemy(type) && unique == 0x00) return $"{type:X2} Enemy";
+        if (IsObject(type, unique)) return $"{type:X2} Obj";
+        if (IsDrop(type) && unique == 0x00) return $"{type:X2} Drop";
+        return $"{type:X2} ?";
     }
 
     private string ExtractMapElementSubType(byte type, byte subType)
     {
-        if (type == 0x0B)
+        if (IsEnemy(type))
         {
             return ExtractEnemySubType(subType);
         }
 
-        if (type == 0x13)
+        if (IsChest(type))
         {
             return ExtractItemSubType(subType);
         }
