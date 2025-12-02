@@ -8,4 +8,5 @@ public class GameConfig
     public byte EnemiesDropRate { get; set; } = 3;
     public byte BattlefieldsBattleCount { get; set; } = 10;
     public bool LevelForestEnemiesGone { get; set; } = false;
+    public float EnemiesEncounterRate { get; set; } = 1.0f;
 }

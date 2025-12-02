@@ -70,6 +70,11 @@ public class HacksRepositoryState
             var value = PromptBool(romHack.HackName, (bool)romHack.DefaultValue, (bool)romHack.CurrentValue);
             romHack.UpdateValue(value);
         }
+        else if (type == typeof(float))
+        {
+            var value = PromptFloat(romHack.HackName, (float)romHack.DefaultValue, (float)romHack.CurrentValue);
+            romHack.UpdateValue(value);
+        }
         else
             throw new NotSupportedException($"Type {type} is not supported");
 
@@ -96,6 +101,15 @@ public class HacksRepositoryState
                 .AddChoice(false)
                 .DefaultValue(currentValue)
                 .WithConverter(choice => choice ? "y" : "n"));
+
+        return answer;
+    }
+
+    private static float PromptFloat(string title, float originalValue, float currentValue)
+    {
+        var answer = AnsiConsole.Prompt(
+            new TextPrompt<float>($"{title} (original value = {originalValue}) ")
+                .DefaultValue(currentValue));
 
         return answer;
     }

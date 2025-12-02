@@ -45,7 +45,7 @@ public class MapsGaleryState
 
         new MainWindow(_navigation)
             .WithContent(new Rows(_mapsData.Select((map, index) => new Markup(RenderMap(map, index))).ToArray()))
-            .AddCompositeCommands(_mapsData.Count(), OpenMap)
+            .AddCompositeCommands(_mapsData.Count(), mapIndex => OpenMap(mapIndex + _pageIndex * _pageSize))
             .AddCommand("[yellow]Page Up[/]", ConsoleKey.PageUp, PageUp)
             .AddCommand("[yellow]Page Down[/]", ConsoleKey.PageDown, PageDown)
             .AddCommand("[green]ESC[/] Close Enemies Gallery", ConsoleKey.Escape, () => { _navigation.StateMachine.Fire(NavigationTriggers.CloseMapsGallery); })

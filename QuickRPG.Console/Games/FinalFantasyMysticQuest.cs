@@ -1,4 +1,5 @@
 ﻿using QuickRPG.Console.Configs;
+using System.Xml.Linq;
 
 namespace QuickRPG.Console.Games;
 
@@ -64,12 +65,19 @@ public partial class FinalFantasyMysticQuest
                 saveConfigAction: configManager.SaveConfig,
                 runHackAction: SetBattlefieldBattleCount),
             new(
-                hackName: "Level Forst Enemies Gone",
+                hackName: "Level Forest Enemies Gone",
                 currentValueFunc: () => _config.LevelForestEnemiesGone,
                 defaultValue: false,
                 updateValueAction: value => _config.LevelForestEnemiesGone = (bool)value,
                 saveConfigAction: configManager.SaveConfig,
                 runHackAction: SetBoneDungeonEnemiesGone),
+            new(
+                hackName: "Enemies Encounter Rate",
+                currentValueFunc: () => _config.EnemiesEncounterRate,
+                defaultValue: 1.0f,
+                updateValueAction: value => _config.EnemiesEncounterRate = (float)value,
+                saveConfigAction: configManager.SaveConfig,
+                runHackAction: SetEnemiesEncounterRate),
         ];
     }
 
@@ -119,6 +127,24 @@ public partial class FinalFantasyMysticQuest
 
             for (int i = 0; i < 9; i++)
                 RomData[BoneDungeonB1MapElements + i * 7 + 3] = 0x05;
+        }
+    }
+
+    public void SetEnemiesEncounterRate()
+    {
+        if (_config.EnemiesEncounterRate < 1.0f)
+        {
+            var maps = GetMapsData();
+
+            foreach (var map in maps.Skip(0).Take(64).Reverse())
+            {
+                var mapElements = ExtractMapElements(map.ElementsOffset);
+
+                foreach (var mapElement in mapElements.Where(me => me.IsEnemy))
+                {
+                    RomData[mapElement.Offset] = 0xFE; 
+                }
+            }
         }
     }
 

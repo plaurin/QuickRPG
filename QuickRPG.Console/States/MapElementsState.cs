@@ -87,10 +87,10 @@ public class MapElementsState
 
         var realElements = mapElements.Where(me => !me.Type.Contains("?"));
 
-        var left = realElements.Min(me => me.X) - 1;
-        var right = realElements.Max(me => me.X) + 1;
-        var top = realElements.Min(me => me.Y) - 1;
-        var bottom = realElements.Max(me => me.Y) + 1;
+        var left = realElements.Any() ? realElements.Min(me => me.X) - 1 : 0;
+        var right = realElements.Any() ? realElements.Max(me => me.X) + 1 : 0;
+        var top = realElements.Any() ? realElements.Min(me => me.Y) - 1 : 0;
+        var bottom = realElements.Any() ? realElements.Max(me => me.Y) + 1 : 0;
 
         var image = new Image<Rgba32>(right - left + 1, bottom - top + 1, new Rgba32() { A = 255, R = 32, G = 32, B = 32 });
         foreach (var mapElement in realElements)
